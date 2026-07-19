@@ -35,9 +35,8 @@ asset  = "KoboRoot.tgz"            # release asset name; glob allowed
 ```
 
 `schema_version = 1` is required. Do not include `pin` — pins are a local
-decision and are never distributed. See kpm's
-[REGISTRY.md](https://github.com/wolffshots/kpm/blob/main/REGISTRY.md) for the
-full format.
+decision and are never distributed. See the
+[kpm README](https://github.com/wolffshots/kpm#readme) for the full format.
 
 ## Note on visibility
 
