@@ -41,8 +41,12 @@ full format.
 
 ## Note on visibility
 
-kpm fetches `registry.toml` over unauthenticated HTTPS (raw file) and
-downloads release assets via the unauthenticated forge API. While this repo is
-**private**, on-device `kpm registry refresh` and updates of packages hosted in
-private repos will not resolve — make the relevant repos public, or run kpm
-from a host that supplies credentials.
+This registry is **public**, so `kpm registry refresh` resolves on-device
+without credentials. kpm fetches `registry.toml` over unauthenticated HTTPS and
+downloads release assets via the unauthenticated forge API, so each package it
+lists must *also* live in a public repo to be installable:
+
+- **nickelhardcover** — public (Codeberg); resolves fine.
+- **kpm** — currently a **private** repo (`github.com/wolffshots/kpm`), so
+  installing or updating kpm through this registry will not resolve until that
+  repo is made public (or kpm gains authenticated-fetch support).
