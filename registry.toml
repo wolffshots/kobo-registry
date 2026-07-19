@@ -1,0 +1,26 @@
+# kpm registry — schema_version 1
+#
+# Package definitions pulled by `kpm registry refresh` / `kpm search` /
+# `kpm install` / `kpm sync`. Definitions only — never binaries; the actual
+# KoboRoot.tgz comes from each package's own release page over TLS.
+# Format reference: https://github.com/wolffshots/kpm/blob/main/REGISTRY.md
+schema_version = 1
+
+# kpm itself — carries the canonical source so `kpm install kpm --adopt`
+# wires up self-update on-device (closes the bootstrap placeholder in the
+# shipped kpm.toml).
+[packages.kpm]
+name   = "kpm"
+source = "github.com/wolffshots/kpm"
+forge  = "github"
+asset  = "KoboRoot.tgz"
+
+[packages.nickelhardcover]
+name    = "NickelHardcover"
+source  = "codeberg.org/StrayRose/NickelHardcover"
+forge   = "forgejo"
+asset   = "KoboRoot.tgz"
+
+  [packages.nickelhardcover.uninstall]
+  method      = "manifest"
+  purge_paths = ["/mnt/onboard/.adds/NickelHardcover/**"]
