@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>kobo-registry — a package registry for kpm</title>
+<meta name="description" content="Package registry for kpm, the Kobo e-reader package manager. Browse the packages, then install them on-device with kpm.">
+<style>
+  :root {
+    --bg: #faf9f6;
+    --fg: #24211c;
+    --muted: #6d675d;
+    --card: #ffffff;
+    --border: #e4e0d7;
+    --accent: #8a5a2b;
+    --code-bg: #f1eee7;
+    --tag-bg: #ede8de;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1c1a17;
+      --fg: #e8e4dc;
+      --muted: #9a938a;
+      --card: #242119;
+      --border: #38342c;
+      --accent: #d0a068;
+      --code-bg: #2c2921;
+      --tag-bg: #322e25;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--fg);
+    line-height: 1.55;
+  }
+  main { max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.25rem 4rem; }
+  h1 { font-size: 1.9rem; margin: 0 0 .25rem; letter-spacing: -.02em; }
+  h1 .dim { color: var(--muted); font-weight: 400; }
+  .tagline { color: var(--muted); margin: 0 0 1.25rem; }
+  .tagline a { color: var(--accent); }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .links { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 2rem; font-size: .95rem; }
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: .85rem 1rem;
+    overflow-x: auto;
+    font-size: .85rem;
+    line-height: 1.5;
+  }
+  code { font-family: ui-monospace, "Cascadia Code", Consolas, monospace; }
+  p code, li code {
+    background: var(--code-bg);
+    border-radius: 4px;
+    padding: .1em .35em;
+    font-size: .88em;
+  }
+  h2 { font-size: 1.15rem; margin: 2.25rem 0 .75rem; }
+  h2 .count { color: var(--muted); font-weight: 400; }
+  .pkg {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem 1.15rem;
+    margin-bottom: .8rem;
+  }
+  .pkg-head { display: flex; align-items: baseline; gap: .6rem; flex-wrap: wrap; }
+  .pkg-name { font-weight: 600; font-size: 1.05rem; }
+  .pkg-id { color: var(--muted); font-size: .85rem; font-family: ui-monospace, Consolas, monospace; }
+  .tags { display: flex; gap: .4rem; flex-wrap: wrap; margin-left: auto; }
+  .tag {
+    background: var(--tag-bg);
+    border-radius: 99px;
+    padding: .1rem .6rem;
+    font-size: .72rem;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  .pkg-meta { margin-top: .45rem; font-size: .88rem; color: var(--muted); }
+  .pkg-meta a { font-family: ui-monospace, Consolas, monospace; font-size: .95em; }
+  .pkg-install { margin-top: .5rem; font-size: .82rem; }
+  .pkg-install code { background: var(--code-bg); border-radius: 4px; padding: .15em .45em; }
+  .note { color: var(--muted); font-size: .88rem; }
+  footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--border); color: var(--muted); font-size: .85rem; }
+  #error { color: #b3423a; }
+</style>
+</head>
+<body>
+<main>
+  <h1>kobo-registry</h1>
+  <p class="tagline">A package registry for <a href="https://github.com/wolffshots/kpm">kpm</a>,
+  the Kobo e-reader package manager.</p>
+
+  <div class="links">
+    <a href="https://github.com/wolffshots/kobo-registry">Repository</a>
+    <a href="registry.toml">registry.toml</a>
+    <a href="https://github.com/wolffshots/kpm#registries">Registry format</a>
+  </div>
+
+  <p>The registry ships <strong>definitions only</strong> — forge coordinates, release-asset
+  names, and curated uninstall recipes. The actual <code>KoboRoot.tgz</code> binaries are
+  downloaded from each package's own release page over TLS.</p>
+
+  <h2>Use</h2>
+  <pre><code>kpm registry add github.com/wolffshots/kobo-registry
+kpm registry refresh
+kpm search
+kpm install nickelmenu</code></pre>
+  <p class="note">Trusting a registry is the same trust decision as running
+  <code>kpm add</code> on each of its entries yourself — a definition chooses the source
+  repo and the uninstall recipe. See the
+  <a href="https://github.com/wolffshots/kpm#registries">kpm README</a> for details.</p>
+
+  <h2 id="pkg-heading">Packages</h2>
+  <div id="packages"><p class="note">Loading <code>registry.toml</code>…</p></div>
+  <p id="error" hidden></p>
+
+  <footer>
+    Rendered live from <a href="registry.toml"><code>registry.toml</code></a> —
+    the same file kpm fetches on <code>registry refresh</code>.
+    To add a package, open a pull request against
+    <a href="https://github.com/wolffshots/kobo-registry">wolffshots/kobo-registry</a>.
+  </footer>
+</main>
+
+<script>
+// Minimal parser for the subset of TOML this registry uses:
+// [dotted.table] headers and `key = value` pairs where value is a
+// basic string, integer, boolean, or array of basic strings.
+function parseToml(text) {
+  const root = {};
+  let table = root;
+  for (let raw of text.split(/\r?\n/)) {
+    const line = raw.trim();
+    if (!line || line.startsWith("#")) continue;
+    const header = line.match(/^\[([A-Za-z0-9_.-]+)\]$/);
+    if (header) {
+      table = root;
+      for (const part of header[1].split(".")) {
+        table = table[part] = table[part] || {};
+      }
+      continue;
+    }
+    const kv = line.match(/^([A-Za-z0-9_-]+)\s*=\s*(.+)$/);
+    if (!kv) continue;
+    table[kv[1]] = parseValue(stripComment(kv[2]));
+  }
+  return root;
+}
+function stripComment(s) {
+  let inStr = false;
+  for (let i = 0; i < s.length; i++) {
+    if (s[i] === '"') inStr = !inStr;
+    else if (s[i] === "#" && !inStr) return s.slice(0, i).trim();
+  }
+  return s.trim();
+}
+function parseValue(v) {
+  if (v.startsWith("[")) {
+    const items = v.slice(1, v.lastIndexOf("]")).match(/"([^"]*)"/g) || [];
+    return items.map(s => s.slice(1, -1));
+  }
+  if (v.startsWith('"')) return v.slice(1, v.lastIndexOf('"'));
+  if (v === "true") return true;
+  if (v === "false") return false;
+  const n = Number(v);
+  return Number.isNaN(n) ? v : n;
+}
+
+function esc(s) {
+  return String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+}
+
+const UNINSTALL_LABEL = {
+  "manifest": "manifest uninstall",
+  "marker": "marker uninstall",
+  "marker-remove": "marker-remove uninstall",
+};
+
+async function load() {
+  const box = document.getElementById("packages");
+  try {
+    const res = await fetch("registry.toml", { cache: "no-cache" });
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    const reg = parseToml(await res.text());
+    const pkgs = Object.entries(reg.packages || {})
+      .sort(([a], [b]) => a.localeCompare(b));
+    if (!pkgs.length) throw new Error("no packages found in registry.toml");
+
+    document.getElementById("pkg-heading").innerHTML =
+      'Packages <span class="count">(' + pkgs.length + ")</span>";
+
+    box.innerHTML = pkgs.map(([id, p]) => {
+      const tags = [];
+      if (p.forge) tags.push(esc(p.forge));
+      if (p.min_kpm) tags.push("kpm ≥ " + esc(p.min_kpm));
+      const method = p.uninstall && (p.uninstall.method || "manifest");
+      if (method) tags.push(esc(UNINSTALL_LABEL[method] || method));
+      const srcUrl = "https://" + p.source;
+      return `<div class="pkg">
+        <div class="pkg-head">
+          <span class="pkg-name">${esc(p.name || id)}</span>
+          <span class="pkg-id">${esc(id)}</span>
+          <span class="tags">${tags.map(t => `<span class="tag">${t}</span>`).join("")}</span>
+        </div>
+        <div class="pkg-meta">
+          <a href="${esc(srcUrl)}">${esc(p.source)}</a>
+          &nbsp;·&nbsp; asset <code>${esc(p.asset || "KoboRoot.tgz")}</code>
+        </div>
+        <div class="pkg-install"><code>kpm install ${esc(id)}</code></div>
+      </div>`;
+    }).join("");
+  } catch (err) {
+    box.innerHTML = "";
+    const e = document.getElementById("error");
+    e.hidden = false;
+    e.textContent = "Could not render registry.toml (" + err.message +
+      ") — view it directly instead.";
+  }
+}
+load();
+</script>
+</body>
+</html>
