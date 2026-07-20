@@ -15,8 +15,10 @@ source = "github.com/wolffshots/kpm"
 forge  = "github"
 asset  = "KoboRoot.tgz"
 
-# NickelClock ships its KoboRoot.tgz wrapped in a release zip; kpm >= 0.4.0
-# unwraps single-tgz zip assets, so older versions must skip this entry.
+# NickelClock ships its KoboRoot.tgz wrapped in a release zip (kpm >= 0.4.0
+# unwraps those) and self-uninstalls when its shipped trigger file is deleted
+# ("delete the uninstall file from the .adds/nickelclock directory, then
+# restart your Kobo" — README).
 [packages.nickelclock]
 name    = "NickelClock"
 source  = "github.com/shermp/NickelClock"
@@ -25,8 +27,60 @@ asset   = "NickelClock-*.zip"
 min_kpm = "0.4.0"
 
   [packages.nickelclock.uninstall]
-  method      = "manifest"
+  method      = "marker-remove"
+  marker_file = "/mnt/onboard/.adds/nickelclock/uninstall"
   purge_paths = ["/mnt/onboard/.adds/nickelclock/**"]
+
+# NickelDBus self-uninstalls when its shipped version-marker file is deleted
+# ("delete the file called nickeldbus in the .adds directory, and reboot").
+[packages.nickeldbus]
+name    = "NickelDBus"
+source  = "github.com/shermp/NickelDBus"
+forge   = "github"
+asset   = "KoboRoot.tgz"
+min_kpm = "0.4.0"
+
+  [packages.nickeldbus.uninstall]
+  method      = "marker-remove"
+  marker_file = "/mnt/onboard/.adds/nickeldbus"
+
+[packages.nickelmenu]
+name   = "NickelMenu"
+source = "github.com/pgaskin/NickelMenu"
+forge  = "github"
+asset  = "KoboRoot.tgz"
+
+  [packages.nickelmenu.uninstall]
+  method      = "marker"
+  marker_file = "/mnt/onboard/.adds/nm/uninstall"
+  purge_paths = ["/mnt/onboard/.adds/nm/**"]
+
+# Uninstall per README: create .adds/screensaver/uninstall.txt, reboot; the
+# generated .kobo/screensaver png is an artifact kpm removes alongside.
+[packages.nickel-screensaver]
+name   = "Nickel Screensaver"
+source = "github.com/redphx/nickel-screensaver"
+forge  = "github"
+asset  = "KoboRoot.tgz"
+
+  [packages.nickel-screensaver.uninstall]
+  method      = "marker"
+  marker_file = "/mnt/onboard/.adds/screensaver/uninstall.txt"
+  extra_paths = ["/mnt/onboard/.kobo/screensaver/nickel-screensaver.png"]
+
+# NickelTypeFix self-uninstalls when its shipped trigger file is deleted
+# ("Delete KOBOeReader/.adds/nickel-type-fix/uninstall and reboot").
+[packages.nickeltypefix]
+name    = "NickelTypeFix"
+source  = "github.com/nicoverbruggen/NickelTypeFix"
+forge   = "github"
+asset   = "KoboRoot.tgz"
+min_kpm = "0.4.0"
+
+  [packages.nickeltypefix.uninstall]
+  method      = "marker-remove"
+  marker_file = "/mnt/onboard/.adds/nickel-type-fix/uninstall"
+  purge_paths = ["/mnt/onboard/.adds/nickel-type-fix/**"]
 
 [packages.nickelhardcover]
 name    = "NickelHardcover"
