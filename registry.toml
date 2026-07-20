@@ -15,6 +15,19 @@ source = "github.com/wolffshots/kpm"
 forge  = "github"
 asset  = "KoboRoot.tgz"
 
+# NickelClock ships its KoboRoot.tgz wrapped in a release zip; kpm >= 0.4.0
+# unwraps single-tgz zip assets, so older versions must skip this entry.
+[packages.nickelclock]
+name    = "NickelClock"
+source  = "github.com/shermp/NickelClock"
+forge   = "github"
+asset   = "NickelClock-*.zip"
+min_kpm = "0.4.0"
+
+  [packages.nickelclock.uninstall]
+  method      = "manifest"
+  purge_paths = ["/mnt/onboard/.adds/nickelclock/**"]
+
 [packages.nickelhardcover]
 name    = "NickelHardcover"
 source  = "codeberg.org/StrayRose/NickelHardcover"
