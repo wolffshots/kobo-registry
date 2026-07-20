@@ -9,6 +9,10 @@ The registry contains **definitions only** — forge coordinates, asset names,
 and uninstall recipes. The actual `KoboRoot.tgz` binaries are downloaded from
 each package's own release page.
 
+**Browse the packages at
+[wolffshots.github.io/kobo-registry](https://wolffshots.github.io/kobo-registry/)** —
+the site renders this repo's `registry.toml` live.
+
 ## Use
 
 ```sh
@@ -43,9 +47,5 @@ decision and are never distributed. See the
 This registry is **public**, so `kpm registry refresh` resolves on-device
 without credentials. kpm fetches `registry.toml` over unauthenticated HTTPS and
 downloads release assets via the unauthenticated forge API, so each package it
-lists must *also* live in a public repo to be installable:
-
-- **nickelhardcover** — public (Codeberg); resolves fine.
-- **kpm** — currently a **private** repo (`github.com/wolffshots/kpm`), so
-  installing or updating kpm through this registry will not resolve until that
-  repo is made public (or kpm gains authenticated-fetch support).
+lists must *also* live in a public repo to be installable. Every package
+currently listed (including kpm itself) lives in a public repo.
