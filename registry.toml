@@ -47,6 +47,24 @@ min_kpm     = "0.4.0"
   method      = "marker-remove"
   marker_file = "/mnt/onboard/.adds/nickeldbus"
 
+# NickelNote ships its KoboRoot.tgz wrapped in a release zip (kpm >= 0.4.0
+# unwraps those). Its documented uninstall is a /mnt/onboard/nn_uninstall
+# trigger file, which sits outside kpm's deletable allowlist (.adds/.kobo only),
+# so removal goes through the manifest instead — the tarball's sole payload is
+# the imageformats plugin, and purge_paths clears the user's templates dir the
+# mod's own uninstaller would have removed.
+[packages.nickelnote]
+name        = "NickelNote"
+description = "Show a custom note on the sleep/lock screen"
+source      = "github.com/onatbas/nickelnote"
+forge       = "github"
+asset       = "NickelNote-*.zip"
+min_kpm     = "0.4.0"
+
+  [packages.nickelnote.uninstall]
+  method      = "manifest"
+  purge_paths = ["/mnt/onboard/.adds/nickelnote/**"]
+
 [packages.nickelmenu]
 name        = "NickelMenu"
 description = "Add custom entries to the Kobo home and reading menus"
