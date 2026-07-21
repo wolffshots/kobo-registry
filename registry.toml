@@ -10,21 +10,23 @@ schema_version = 1
 # wires up self-update on-device (closes the bootstrap placeholder in the
 # shipped kpm.toml).
 [packages.kpm]
-name   = "kpm"
-source = "github.com/wolffshots/kpm"
-forge  = "github"
-asset  = "KoboRoot.tgz"
+name        = "kpm"
+description = "Kobo package manager — install and update mods from the device"
+source      = "github.com/wolffshots/kpm"
+forge       = "github"
+asset       = "KoboRoot.tgz"
 
 # NickelClock ships its KoboRoot.tgz wrapped in a release zip (kpm >= 0.4.0
 # unwraps those) and self-uninstalls when its shipped trigger file is deleted
 # ("delete the uninstall file from the .adds/nickelclock directory, then
 # restart your Kobo" — README).
 [packages.nickelclock]
-name    = "NickelClock"
-source  = "github.com/shermp/NickelClock"
-forge   = "github"
-asset   = "NickelClock-*.zip"
-min_kpm = "0.4.0"
+name        = "NickelClock"
+description = "Show the current time in the reading header/footer"
+source      = "github.com/shermp/NickelClock"
+forge       = "github"
+asset       = "NickelClock-*.zip"
+min_kpm     = "0.4.0"
 
   [packages.nickelclock.uninstall]
   method      = "marker-remove"
@@ -34,21 +36,23 @@ min_kpm = "0.4.0"
 # NickelDBus self-uninstalls when its shipped version-marker file is deleted
 # ("delete the file called nickeldbus in the .adds directory, and reboot").
 [packages.nickeldbus]
-name    = "NickelDBus"
-source  = "github.com/shermp/NickelDBus"
-forge   = "github"
-asset   = "KoboRoot.tgz"
-min_kpm = "0.4.0"
+name        = "NickelDBus"
+description = "D-Bus interface for scripting and automating the Nickel UI"
+source      = "github.com/shermp/NickelDBus"
+forge       = "github"
+asset       = "KoboRoot.tgz"
+min_kpm     = "0.4.0"
 
   [packages.nickeldbus.uninstall]
   method      = "marker-remove"
   marker_file = "/mnt/onboard/.adds/nickeldbus"
 
 [packages.nickelmenu]
-name   = "NickelMenu"
-source = "github.com/pgaskin/NickelMenu"
-forge  = "github"
-asset  = "KoboRoot.tgz"
+name        = "NickelMenu"
+description = "Add custom entries to the Kobo home and reading menus"
+source      = "github.com/pgaskin/NickelMenu"
+forge       = "github"
+asset       = "KoboRoot.tgz"
 
   [packages.nickelmenu.uninstall]
   method      = "marker"
@@ -58,10 +62,11 @@ asset  = "KoboRoot.tgz"
 # Uninstall per README: create .adds/screensaver/uninstall.txt, reboot; the
 # generated .kobo/screensaver png is an artifact kpm removes alongside.
 [packages.nickel-screensaver]
-name   = "Nickel Screensaver"
-source = "github.com/redphx/nickel-screensaver"
-forge  = "github"
-asset  = "KoboRoot.tgz"
+name        = "Nickel Screensaver"
+description = "Use your own images as the Kobo sleep/screensaver screen"
+source      = "github.com/redphx/nickel-screensaver"
+forge       = "github"
+asset       = "KoboRoot.tgz"
 
   [packages.nickel-screensaver.uninstall]
   method      = "marker"
@@ -71,11 +76,12 @@ asset  = "KoboRoot.tgz"
 # NickelTypeFix self-uninstalls when its shipped trigger file is deleted
 # ("Delete KOBOeReader/.adds/nickel-type-fix/uninstall and reboot").
 [packages.nickeltypefix]
-name    = "NickelTypeFix"
-source  = "github.com/nicoverbruggen/NickelTypeFix"
-forge   = "github"
-asset   = "KoboRoot.tgz"
-min_kpm = "0.4.0"
+name        = "NickelTypeFix"
+description = "Correct inconsistent font weights in the Nickel UI"
+source      = "github.com/nicoverbruggen/NickelTypeFix"
+forge       = "github"
+asset       = "KoboRoot.tgz"
+min_kpm     = "0.4.0"
 
   [packages.nickeltypefix.uninstall]
   method      = "marker-remove"
@@ -83,10 +89,11 @@ min_kpm = "0.4.0"
   purge_paths = ["/mnt/onboard/.adds/nickel-type-fix/**"]
 
 [packages.nickelhardcover]
-name    = "NickelHardcover"
-source  = "codeberg.org/StrayRose/NickelHardcover"
-forge   = "forgejo"
-asset   = "KoboRoot.tgz"
+name        = "NickelHardcover"
+description = "Sync your Kobo reading progress to a Hardcover account"
+source      = "codeberg.org/StrayRose/NickelHardcover"
+forge       = "forgejo"
+asset       = "KoboRoot.tgz"
 
   [packages.nickelhardcover.uninstall]
   method      = "manifest"
