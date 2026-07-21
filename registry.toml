@@ -116,3 +116,22 @@ asset       = "KoboRoot.tgz"
   [packages.nickelhardcover.uninstall]
   method      = "manifest"
   purge_paths = ["/mnt/onboard/.adds/NickelHardcover/**"]
+
+# Requires NickelMenu — its menu entries are the only way to invoke it. No
+# uninstall mechanism of its own, so removal is by manifest: the tarball ships
+# .adds/kscribbler/{config.env.example,toggle-debug.sh,upgrade.sh},
+# .adds/nm/kscribbler and the /opt/bin/kscribbler binary. purge_paths clears the
+# runtime files the manifest can't know about (config.env with the Hardcover API
+# token, kscribblerdb, kscribbler.log); extra_paths catches the extra NickelMenu
+# fragment that toggle-debug.sh writes when debug options are switched on.
+[packages.kscribbler]
+name        = "Kscribbler"
+description = "Sync your Kobo highlights and notes to a Hardcover account"
+source      = "github.com/GianniBYoung/kscribbler"
+forge       = "github"
+asset       = "KoboRoot.tgz"
+
+  [packages.kscribbler.uninstall]
+  method      = "manifest"
+  extra_paths = ["/mnt/onboard/.adds/nm/kscribbler-debug"]
+  purge_paths = ["/mnt/onboard/.adds/kscribbler/**"]
