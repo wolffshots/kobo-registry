@@ -15,6 +15,8 @@ description = "Kobo package manager — install and update mods from the device"
 source      = "github.com/wolffshots/kpm"
 forge       = "github"
 asset       = "KoboRoot.tgz"
+tested_fw   = "4.45.23697"
+nh_name     = "NickelKPM"
 
 # NickelClock ships its KoboRoot.tgz wrapped in a release zip (kpm >= 0.4.0
 # unwraps those) and self-uninstalls when its shipped trigger file is deleted
@@ -27,6 +29,8 @@ source      = "github.com/shermp/NickelClock"
 forge       = "github"
 asset       = "NickelClock-*.zip"
 min_kpm     = "0.4.0"
+tested_fw   = "4.45.23697"
+nh_name     = "NickelClock"
 
   [packages.nickelclock.uninstall]
   method      = "marker-remove"
@@ -50,6 +54,8 @@ source      = "github.com/shermp/NickelDBus"
 forge       = "github"
 asset       = "KoboRoot.tgz"
 min_kpm     = "0.4.0"
+tested_fw   = "4.45.23697"
+nh_name     = "NickelDBus"
 
   [packages.nickeldbus.uninstall]
   method      = "marker-remove"
@@ -68,6 +74,12 @@ source      = "github.com/onatbas/nickelnote"
 forge       = "github"
 asset       = "NickelNote-*.zip"
 min_kpm     = "0.4.0"
+# tested_fw is an estimate: v0.0.4 (2024-05) predates FW 4.45 and is confirmed
+# NON-functional on 4.45.23697 (Libra Colour). 4.38.23429 is a real firmware
+# from the mod's era used as an upper bound so the "untested on your firmware"
+# warning fires. Not a first-party pass.
+tested_fw   = "4.38.23429"
+nh_name     = "NickelNote"
 
   [packages.nickelnote.uninstall]
   method      = "manifest"
@@ -141,6 +153,8 @@ description = "Add custom entries to the Kobo home and reading menus"
 source      = "github.com/pgaskin/NickelMenu"
 forge       = "github"
 asset       = "KoboRoot.tgz"
+tested_fw   = "4.45.23697"
+nh_name     = "NickelMenu"
 
   [packages.nickelmenu.uninstall]
   method      = "marker"
@@ -155,6 +169,11 @@ description = "Use your own images as the Kobo sleep/screensaver screen"
 source      = "github.com/redphx/nickel-screensaver"
 forge       = "github"
 asset       = "KoboRoot.tgz"
+tested_fw   = "4.45.23697"
+# nh_name has an embedded space (the mod's nh_info.name is "Nickel Screensaver",
+# not a CamelCase token) — set explicitly so doctor's dump-log glob matches; the
+# display-name fallback would wrongly strip the space to "NickelScreensaver".
+nh_name     = "Nickel Screensaver"
 
   [packages.nickel-screensaver.uninstall]
   method      = "marker"
@@ -170,6 +189,8 @@ source      = "github.com/nicoverbruggen/NickelTypeFix"
 forge       = "github"
 asset       = "KoboRoot.tgz"
 min_kpm     = "0.4.0"
+tested_fw   = "4.45.23697"
+nh_name     = "NickelTypeFix"
 
   [packages.nickeltypefix.uninstall]
   method      = "marker-remove"
@@ -182,6 +203,8 @@ description = "Sync your Kobo reading progress to a Hardcover account"
 source      = "codeberg.org/StrayRose/NickelHardcover"
 forge       = "forgejo"
 asset       = "KoboRoot.tgz"
+tested_fw   = "4.45.23697"
+nh_name     = "NickelHardcover"
 
   [packages.nickelhardcover.uninstall]
   method      = "manifest"
@@ -200,6 +223,7 @@ description = "Sync your Kobo highlights and notes to a Hardcover account"
 source      = "github.com/GianniBYoung/kscribbler"
 forge       = "github"
 asset       = "KoboRoot.tgz"
+tested_fw   = "4.45.23697"
 
   [packages.kscribbler.uninstall]
   method      = "manifest"
@@ -221,6 +245,7 @@ source      = "github.com/sublipri/kobo-wifi-remote"
 forge       = "github"
 asset       = "KoboWiFiRemote-*.zip"
 min_kpm     = "0.4.0"
+tested_fw   = "4.45.23697"
 
   [packages.kobowifiremote.uninstall]
   method      = "manifest"
@@ -235,6 +260,8 @@ description = "Add Kindle-style page-turn animations to supported Kobo devices"
 source      = "github.com/nicoverbruggen/NickelDissolve"
 forge       = "github"
 asset       = "KoboRoot.tgz"
+tested_fw   = "4.45.23697"
+nh_name     = "NickelDissolve"
 
   [packages.nickel-dissolve.uninstall]
   method      = "marker-remove"
@@ -253,6 +280,8 @@ description = "Hide configurable widgets and rows on the Kobo home screen"
 source      = "github.com/nicoverbruggen/NickelHome"
 forge       = "github"
 asset       = "KoboRoot.tgz"
+tested_fw   = "4.45.23697"
+nh_name     = "NickelHome"
 
   [packages.nickel-home.uninstall]
   method      = "marker"
