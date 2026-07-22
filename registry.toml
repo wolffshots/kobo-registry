@@ -33,6 +33,14 @@ min_kpm     = "0.4.0"
   marker_file = "/mnt/onboard/.adds/nickelclock/uninstall"
   purge_paths = ["/mnt/onboard/.adds/nickelclock/**"]
 
+  # Clock/battery display options; NickelClock re-reads them at boot.
+  [[packages.nickelclock.configs]]
+  name        = "Settings"
+  path        = "/mnt/onboard/.adds/nickelclock/settings.ini"
+  format      = "ini"
+  reload      = "reboot"
+  description = "Clock and battery display options."
+
 # NickelDBus self-uninstalls when its shipped version-marker file is deleted
 # ("delete the file called nickeldbus in the .adds directory, and reboot").
 [packages.nickeldbus]
@@ -64,6 +72,32 @@ min_kpm     = "0.4.0"
   [packages.nickelnote.uninstall]
   method      = "manifest"
   purge_paths = ["/mnt/onboard/.adds/nickelnote/**"]
+
+  # User-created templates: kpm may create them on first save (create = true).
+  # The sleep-screen note needs both content and style present to render.
+  [[packages.nickelnote.configs]]
+  name        = "Note content"
+  path        = "/mnt/onboard/.adds/nickelnote/content.template"
+  format      = "text"
+  reload      = "auto"
+  create      = true
+  description = "Rich text shown on the sleep screen. Needs Style too."
+
+  [[packages.nickelnote.configs]]
+  name        = "Style"
+  path        = "/mnt/onboard/.adds/nickelnote/style.template"
+  format      = "text"
+  reload      = "auto"
+  create      = true
+  description = "Stylesheet for the sleep-screen note."
+
+  [[packages.nickelnote.configs]]
+  name        = "PIN screen message"
+  path        = "/mnt/onboard/.adds/nickelnote/pin.template"
+  format      = "text"
+  reload      = "auto"
+  create      = true
+  description = "Message shown on the lock-PIN screen."
 
 [packages.nickelmenu]
 name        = "NickelMenu"
