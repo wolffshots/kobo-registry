@@ -135,3 +135,55 @@ asset       = "KoboRoot.tgz"
   method      = "manifest"
   extra_paths = ["/mnt/onboard/.adds/nm/kscribbler-debug"]
   purge_paths = ["/mnt/onboard/.adds/kscribbler/**"]
+
+# Ships its KoboRoot.tgz wrapped in a release zip alongside LICENSE, README.html
+# and an Uninstaller.zip — only the single inner *.tgz is unwrapped, the other
+# entries are ignored (kpm >= 0.4.0). The daemon is started by its udev rule, so
+# NickelMenu is a convenience entry here, not a requirement. Upstream's own
+# uninstaller only drops the udev rule and leaves the daemon to self-clean on the
+# next boot, which kpm can't trigger — manifest removal takes out everything the
+# tarball placed (/etc/udev/rules.d/98-wifiremote.rules, .adds/wifiremote,
+# .adds/nm/wifiremote, /opt/wifiremote) directly instead.
+[packages.kobowifiremote]
+name        = "Kobo Wi-Fi Remote"
+description = "Web-based remote control and page-turner served over Wi-Fi"
+source      = "github.com/sublipri/kobo-wifi-remote"
+forge       = "github"
+asset       = "KoboWiFiRemote-*.zip"
+min_kpm     = "0.4.0"
+
+  [packages.kobowifiremote.uninstall]
+  method      = "manifest"
+  purge_paths = ["/mnt/onboard/.adds/wifiremote/**"]
+
+# NickelDissolve self-uninstalls when its shipped trigger file is deleted
+# ("delete the file KOBOeReader/.adds/nickel-dissolve/uninstall and reboot" —
+# README); the trigger is present in the tarball, confirmed.
+[packages.nickel-dissolve]
+name        = "NickelDissolve"
+description = "Add Kindle-style page-turn animations to supported Kobo devices"
+source      = "github.com/nicoverbruggen/NickelDissolve"
+forge       = "github"
+asset       = "KoboRoot.tgz"
+
+  [packages.nickel-dissolve.uninstall]
+  method      = "marker-remove"
+  marker_file = "/mnt/onboard/.adds/nickel-dissolve/uninstall"
+  purge_paths = ["/mnt/onboard/.adds/nickel-dissolve/**"]
+
+# NickelHome uninstalls when a trigger file is CREATED ("create an empty file
+# named uninstall in .adds/nickel-home/, then reboot" — README); the tarball
+# ships only doc + default, no trigger, so this is "marker", not "marker-remove".
+# Deliberately no purge_paths: the marker is written into this same directory and
+# Execute creates it before running deletions, so purging the tree would remove
+# the trigger before the reboot that acts on it. The mod clears its own files.
+[packages.nickel-home]
+name        = "NickelHome"
+description = "Hide configurable widgets and rows on the Kobo home screen"
+source      = "github.com/nicoverbruggen/NickelHome"
+forge       = "github"
+asset       = "KoboRoot.tgz"
+
+  [packages.nickel-home.uninstall]
+  method      = "marker"
+  marker_file = "/mnt/onboard/.adds/nickel-home/uninstall"
