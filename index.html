@@ -83,6 +83,8 @@
   }
   .pkg-meta { margin-top: .45rem; font-size: .88rem; color: var(--muted); }
   .pkg-meta a { font-family: ui-monospace, Consolas, monospace; font-size: .95em; }
+  .pkg-config { margin-top: .35rem; font-size: .82rem; }
+  .pkg-config .dim { opacity: .75; }
   .pkg-install { margin-top: .5rem; font-size: .82rem; }
   .pkg-install code { background: var(--code-bg); border-radius: 4px; padding: .15em .45em; }
   .note { color: var(--muted); font-size: .88rem; }
@@ -103,8 +105,9 @@
   </div>
 
   <p>The registry ships <strong>definitions only</strong> — forge coordinates, release-asset
-  names, and curated uninstall recipes. The actual <code>KoboRoot.tgz</code> binaries are
-  downloaded from each package's own release page over TLS.</p>
+  names, curated uninstall recipes, firmware-compatibility notes, and editable-config
+  declarations. The actual <code>KoboRoot.tgz</code> binaries are downloaded from each
+  package's own release page over TLS.</p>
 
   <h2>Use</h2>
   <pre><code>kpm registry add github.com/wolffshots/kobo-registry
@@ -130,14 +133,32 @@ kpm install nickelmenu</code></pre>
 
 <script>
 // Minimal parser for the subset of TOML this registry uses:
-// [dotted.table] headers and `key = value` pairs where value is a
-// basic string, integer, boolean, or array of basic strings.
+// [dotted.table] and [[dotted.array.of.tables]] headers, `key = value` pairs
+// (basic string, integer, boolean, or array of basic strings), and multi-line
+// literal/basic strings (''' … ''' / """ … """) — the latter carry config
+// templates whose bodies must be consumed whole, not parsed line by line.
 function parseToml(text) {
   const root = {};
   let table = root;
-  for (let raw of text.split(/\r?\n/)) {
-    const line = raw.trim();
+  const lines = text.split(/\r?\n/);
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
     if (!line || line.startsWith("#")) continue;
+
+    // [[a.b.c]] — append a fresh table to the array at a.b.c
+    const arr = line.match(/^\[\[([A-Za-z0-9_.-]+)\]\]$/);
+    if (arr) {
+      const parts = arr[1].split(".");
+      let t = root;
+      for (let j = 0; j < parts.length - 1; j++) t = t[parts[j]] = t[parts[j]] || {};
+      const key = parts[parts.length - 1];
+      const list = t[key] = t[key] || [];
+      table = {};
+      list.push(table);
+      continue;
+    }
+
+    // [a.b.c] — descend/create the nested table
     const header = line.match(/^\[([A-Za-z0-9_.-]+)\]$/);
     if (header) {
       table = root;
@@ -146,8 +167,30 @@ function parseToml(text) {
       }
       continue;
     }
+
     const kv = line.match(/^([A-Za-z0-9_-]+)\s*=\s*(.+)$/);
     if (!kv) continue;
+
+    // Multi-line string value: consume raw lines through the closing delimiter
+    // so the template body can't be mis-read as keys/tables.
+    const open = kv[2].match(/^('''|""")/);
+    if (open) {
+      const delim = open[1];
+      const rest = kv[2].slice(3);
+      if (rest.includes(delim)) {
+        table[kv[1]] = rest.slice(0, rest.indexOf(delim));
+        continue;
+      }
+      const buf = rest ? [rest] : [];
+      for (i++; i < lines.length; i++) {
+        const idx = lines[i].indexOf(delim);
+        if (idx >= 0) { buf.push(lines[i].slice(0, idx)); break; }
+        buf.push(lines[i]);
+      }
+      table[kv[1]] = buf.join("\n");
+      continue;
+    }
+
     table[kv[1]] = parseValue(stripComment(kv[2]));
   }
   return root;
@@ -201,17 +244,26 @@ async function load() {
       if (p.min_kpm) tags.push("kpm ≥ " + esc(p.min_kpm));
       const method = p.uninstall && (p.uninstall.method || "manifest");
       if (method) tags.push(esc(UNINSTALL_LABEL[method] || method));
+      const configs = Array.isArray(p.configs) ? p.configs : [];
+      if (configs.length) tags.push("configurable");
       const srcUrl = "https://" + p.source;
+      const meta = [`<a href="${esc(srcUrl)}">${esc(p.source)}</a>`,
+                    `asset <code>${esc(p.asset || "KoboRoot.tgz")}</code>`];
+      if (p.tested_fw) meta.push("tested on firmware " + esc(p.tested_fw));
+      const configLine = configs.length
+        ? `<div class="pkg-config note">Editable config: ` +
+          configs.map(c => `${esc(c.name || c.path || "?")}` +
+            (c.format ? ` <span class="dim">(${esc(c.format)})</span>` : "")).join(", ") +
+          `</div>`
+        : "";
       return `<div class="pkg">
         <div class="pkg-head">
           <span class="pkg-name">${esc(p.name || id)}</span>
           <span class="pkg-id">${esc(id)}</span>
           <span class="tags">${tags.map(t => `<span class="tag">${t}</span>`).join("")}</span>
         </div>
-        <div class="pkg-meta">
-          <a href="${esc(srcUrl)}">${esc(p.source)}</a>
-          &nbsp;·&nbsp; asset <code>${esc(p.asset || "KoboRoot.tgz")}</code>
-        </div>
+        <div class="pkg-meta">${meta.join(" &nbsp;·&nbsp; ")}</div>
+        ${configLine}
         <div class="pkg-install"><code>kpm install ${esc(id)}</code></div>
       </div>`;
     }).join("");
