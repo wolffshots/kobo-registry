@@ -169,7 +169,6 @@ description = "Use your own images as the Kobo sleep/screensaver screen"
 source      = "github.com/redphx/nickel-screensaver"
 forge       = "github"
 asset       = "KoboRoot.tgz"
-tested_fw   = "4.45.23697"
 # nh_name has an embedded space (the mod's nh_info.name is "Nickel Screensaver",
 # not a CamelCase token) — set explicitly so doctor's dump-log glob matches; the
 # display-name fallback would wrongly strip the space to "NickelScreensaver".
@@ -189,7 +188,6 @@ source      = "github.com/nicoverbruggen/NickelTypeFix"
 forge       = "github"
 asset       = "KoboRoot.tgz"
 min_kpm     = "0.4.0"
-tested_fw   = "4.45.23697"
 nh_name     = "NickelTypeFix"
 
   [packages.nickeltypefix.uninstall]
@@ -245,7 +243,6 @@ source      = "github.com/sublipri/kobo-wifi-remote"
 forge       = "github"
 asset       = "KoboWiFiRemote-*.zip"
 min_kpm     = "0.4.0"
-tested_fw   = "4.45.23697"
 
   [packages.kobowifiremote.uninstall]
   method      = "manifest"
@@ -280,7 +277,6 @@ description = "Hide configurable widgets and rows on the Kobo home screen"
 source      = "github.com/nicoverbruggen/NickelHome"
 forge       = "github"
 asset       = "KoboRoot.tgz"
-tested_fw   = "4.45.23697"
 nh_name     = "NickelHome"
 
   [packages.nickel-home.uninstall]
