@@ -147,6 +147,10 @@ CA: +1 555 000 0000<br/>
 </p>
 '''
 
+# Uninstall is NickelMenu's own: create .adds/nm/uninstall (nh_info.uninstall_flag
+# = NM_CONFIG_DIR "/uninstall" in src/nickelmenu.cc, and the shipped .adds/nm/doc
+# says the same) and reboot. NickelHook then unlinks that file and deletes
+# libnm.so; NickelMenu registers no nh uninstall callback, so nothing else goes.
 [packages.nickelmenu]
 name        = "NickelMenu"
 description = "Add custom entries to the Kobo home and reading menus"
@@ -159,7 +163,18 @@ nh_name     = "NickelMenu"
   [packages.nickelmenu.uninstall]
   method      = "marker"
   marker_file = "/mnt/onboard/.adds/nm/uninstall"
-  purge_paths = ["/mnt/onboard/.adds/nm/**"]
+  # No purge_paths, for two independent reasons — both traps for any future
+  # `marker` entry:
+  #  1. Execute writes the marker BEFORE running deletions, so purge_paths
+  #     covering the marker's own directory would delete the very trigger file
+  #     the next reboot is supposed to act on, and the uninstall would silently
+  #     never happen. A `marker` entry must never purge its marker's tree.
+  #  2. .adds/nm is SHARED, not NickelMenu's private tree: kpm itself
+  #     (.adds/nm/kpm), Kscribbler (.adds/nm/kscribbler) and Kobo Wi-Fi Remote
+  #     (.adds/nm/wifiremote) all install menu fragments there, so a recursive
+  #     purge would delete other packages' files.
+  # NickelMenu's shipped .adds/nm/doc and the user's own menu config files are
+  # therefore left in place, exactly as an upstream uninstall leaves them.
 
 # Uninstall per README: create .adds/screensaver/uninstall.txt, reboot; the
 # generated .kobo/screensaver png is an artifact kpm removes alongside.
@@ -195,6 +210,15 @@ nh_name     = "NickelTypeFix"
   marker_file = "/mnt/onboard/.adds/nickel-type-fix/uninstall"
   purge_paths = ["/mnt/onboard/.adds/nickel-type-fix/**"]
 
+# NickelHardcover's documented uninstall is a trigger file at the partition root
+# ("create a file called nickelhardcover_uninstall on the root of your device and
+# manually restart your Kobo" — README), i.e. /mnt/onboard/nickelhardcover_uninstall.
+# That path sits outside kpm's deletable allowlist (.adds/.kobo only) — the same
+# situation as nickelnote's nn_uninstall — so this must NOT be converted to
+# method = "marker": Compute requires marker_file to classify as allowed and
+# would refuse the plan outright. Removal goes through the manifest instead; the
+# tarball ships .adds/NickelHardcover/{cli,config_example.ini} plus the
+# imageformats plugin, and purge_paths clears the user's config dir.
 [packages.nickelhardcover]
 name        = "NickelHardcover"
 description = "Sync your Kobo reading progress to a Hardcover account"
@@ -265,12 +289,14 @@ nh_name     = "NickelDissolve"
   marker_file = "/mnt/onboard/.adds/nickel-dissolve/uninstall"
   purge_paths = ["/mnt/onboard/.adds/nickel-dissolve/**"]
 
-# NickelHome uninstalls when a trigger file is CREATED ("create an empty file
-# named uninstall in .adds/nickel-home/, then reboot" — README); the tarball
-# ships only doc + default, no trigger, so this is "marker", not "marker-remove".
+# NickelHome uninstalls when a trigger file is CREATED (nh_info.uninstall_flag =
+# NHM_CONFIG_DIR "/uninstall" in src/nickelhome.cc); the tarball ships only doc +
+# default, no trigger, so this is "marker", not "marker-remove".
 # Deliberately no purge_paths: the marker is written into this same directory and
 # Execute creates it before running deletions, so purging the tree would remove
-# the trigger before the reboot that acts on it. The mod clears its own files.
+# the trigger before the reboot that acts on it. NickelHome registers no
+# NickelHook uninstall callback, so the reboot removes only the marker and
+# libnickelhome.so — .adds/nickel-home/{doc,default,config} stay behind.
 [packages.nickel-home]
 name        = "NickelHome"
 description = "Hide configurable widgets and rows on the Kobo home screen"
