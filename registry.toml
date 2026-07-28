@@ -308,3 +308,41 @@ nh_name     = "NickelHome"
   [packages.nickel-home.uninstall]
   method      = "marker"
   marker_file = "/mnt/onboard/.adds/nickel-home/uninstall"
+
+# kobo-tweaks auto-uninstalls NickelClock as part of its own install, which
+# would delete a kpm-tracked package's files behind kpm's back. min_kpm is
+# mandatory: an older kpm ignores `conflicts` and would let that happen.
+# Verified in v1.1.1's shipped libtweaks.so and in src/tweaks.cc:41-49:
+# tweaksInit() unconditionally deletes /usr/local/Kobo/imageformats/
+# libnickelclock.so and its .failsafe sibling whenever they exist — on every
+# Nickel start, not only the first — and that .so is the whole of NickelClock's
+# binary payload and a recorded manifest entry, so kpm would be left with a
+# nickelclock state record whose files are gone.
+[packages.kobo-tweaks]
+name        = "Kobo Tweaks"
+description = "Header/footer tweaks, reading widgets, custom bookmarks and dark mode"
+source      = "github.com/redphx/kobo-tweaks"
+forge       = "github"
+asset       = "KoboRoot.tgz"
+conflicts   = ["nickelclock"]
+min_kpm     = "0.10.0"
+# nh_name has an embedded space (nh_info.name is "Kobo Tweaks"), the same case
+# as nickel-screensaver — set explicitly so doctor's dump-log glob matches; the
+# display-name fallback strips the space to "KoboTweaks".
+nh_name     = "Kobo Tweaks"
+
+  # Uninstall is upstream's own: delete .adds/tweaks/DELETE_TO_UNINSTALL.txt and
+  # restart (README §Uninstallation). The file is shipped in the tarball
+  # (confirmed in v1.1.1) and is nh_info.uninstall_xflag, so its ABSENCE is the
+  # trigger — marker-remove, not marker. Do NOT switch this to method = "marker"
+  # on the mod's other trigger (.adds/tweaks/uninstall, nh_info.uninstall_flag):
+  # Execute writes the marker before running deletions, so a marker in this same
+  # directory plus the purge below would delete the trigger the next reboot is
+  # supposed to act on. NickelHook removes libtweaks.so itself at that reboot.
+  # .adds/tweaks is private to this mod (DATA_DIR in src/common.h — settings.ini,
+  # images/ and the two trigger files; no other tracked package writes there), so
+  # the recursive purge cannot reach another package's files.
+  [packages.kobo-tweaks.uninstall]
+  method      = "marker-remove"
+  marker_file = "/mnt/onboard/.adds/tweaks/DELETE_TO_UNINSTALL.txt"
+  purge_paths = ["/mnt/onboard/.adds/tweaks/**"]
