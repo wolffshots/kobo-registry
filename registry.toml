@@ -346,3 +346,101 @@ nh_name     = "Kobo Tweaks"
   method      = "marker-remove"
   marker_file = "/mnt/onboard/.adds/tweaks/DELETE_TO_UNINSTALL.txt"
   purge_paths = ["/mnt/onboard/.adds/tweaks/**"]
+
+# KOReader is the first app-tree package: it ships no KoboRoot.tgz, just a plain
+# directory tree in a release zip that kpm extracts itself into dest. min_kpm is
+# mandatory — an older kpm has no [install] handling and would try to stage the
+# zip as a tarball. Verified against v2026.07 / koreader-kobo-v2026.07.zip:
+# 1045 entries, 83.9 MiB uncompressed, max depth 7, no symlinks, and exactly two
+# zip roots — "koreader/" (1044 entries, the tree) and "koreader.png" (the KFMon
+# launcher icon). root = "koreader" installs only the tree; the icon belongs at
+# the root of the user partition, outside kpm's writable allowlist (.adds/.kobo
+# only), so KFMon users must copy it over USB themselves. NickelMenu users do not
+# need it at all — the drop-in below launches KOReader directly. dest is also the
+# exact path KFMon's shipped koreader.ini already runs, so an existing KFMon
+# install keeps working.
+#
+# The hyphen after "kobo" in the asset glob is load-bearing: "koreader-kobo*.zip"
+# (no hyphen) also matches koreader-kobov5-v2026.07.zip, the firmware-5.x build,
+# and kpm refuses an ambiguous glob rather than guess between 23 per-platform
+# assets. A firmware-5.x device needs a separate id with its own glob.
+#
+# No tested_fw: nobody has installed this through kpm on a device yet, and per
+# the 2026-07-23 correction that field means "positively confirmed working" and
+# must never be asserted from convenience. The cost is that a firmware-5.x device
+# gets no "untested on your firmware" note and installs the 4.x build silently;
+# adding tested_fw = "4.45.23697" after a real 4.x device test restores it.
+#
+# On firmware >= 4.17 Nickel indexes hidden folders, so KOReader's files can show
+# up in the library. The fix is an ExcludeSyncFolders line in .kobo/Kobo/Kobo
+# eReader.conf, which kpm deliberately does NOT write and does not declare as an
+# editable config: Nickel owns that file and reverts edits made while it runs.
+# "kpm doctor" prints the exact line to add.
+#
+# Settings, statistics, annotations and downloaded plugins all live INSIDE
+# .adds/koreader and are not in the install manifest, so a plain uninstall
+# removes exactly the files kpm wrote and purge_paths clears user data only on an
+# explicit --purge.
+[packages.koreader]
+name        = "KOReader"
+description = "Full-featured alternative document reader (EPUB, PDF, DjVu, CBZ) — new to kpm, not yet tested on a device, feedback welcome"
+source      = "github.com/koreader/koreader"
+forge       = "github"
+asset       = "koreader-kobo-*.zip"
+min_kpm     = "0.11.0"
+
+  [packages.koreader.install]
+  method = "app-tree"
+  root   = "koreader"
+  dest   = "/mnt/onboard/.adds/koreader"
+
+    [packages.koreader.install.launcher]
+    nm_file  = "/mnt/onboard/.adds/nm/koreader"
+    nm_entry = "menu_item:main:KOReader:cmd_spawn:quiet:exec /mnt/onboard/.adds/koreader/koreader.sh"
+
+  [packages.koreader.uninstall]
+  method      = "manifest"
+  purge_paths = ["/mnt/onboard/.adds/koreader/**"]
+
+# Plato is the second app-tree package. Its release zip is FLAT (no root folder),
+# so [install] omits root ("" is the default and writing root = "" would be
+# noise) and the whole zip lands in dest. Verified against 0.9.45 /
+# plato-0.9.45.zip: 209 entries, 44.5 MiB uncompressed, max depth 3, no symlinks,
+# 13 explicit directory entries and 17 top-level names (bin, css, dictionaries,
+# fonts, hyphenation-patterns, icons, keyboard-layouts, libs, resources, scripts,
+# plus the plato binary, plato.sh, nickel.sh, config-sample.sh,
+# convert-dictionary.sh, Settings-sample.toml and LICENSE-AGPLv3). One of those
+# directory entries — dictionaries/ — is empty and Plato expects it to exist; kpm
+# honours explicit zip directory entries, so it is created.
+#
+# dest is the exact path KFMon's shipped plato.ini already runs, so an existing
+# KFMon install keeps working. Plato's icons/ are its own UI SVGs, not a launcher
+# icon: KFMon watches /mnt/onboard/icons/plato.png, which is not in this zip and
+# is outside kpm's writable allowlist anyway.
+#
+# No tested_fw, for the same reason as koreader — no curator has run this through
+# kpm on a device.
+#
+# Runtime files live in the tree and are not in the manifest: Settings.toml (from
+# the shipped Settings-sample.toml), config.sh (from config-sample.sh), the
+# css/{epub,html,dictionary}-user.css overrides and whatever the user drops into
+# dictionaries/. A plain uninstall leaves all of them and --purge clears them.
+[packages.plato]
+name        = "Plato"
+description = "Lightweight alternative document reader and library manager — new to kpm, not yet tested on a device, feedback welcome"
+source      = "github.com/baskerville/plato"
+forge       = "github"
+asset       = "plato-*.zip"
+min_kpm     = "0.11.0"
+
+  [packages.plato.install]
+  method = "app-tree"
+  dest   = "/mnt/onboard/.adds/plato"
+
+    [packages.plato.install.launcher]
+    nm_file  = "/mnt/onboard/.adds/nm/plato"
+    nm_entry = "menu_item:main:Plato:cmd_spawn:quiet:exec /mnt/onboard/.adds/plato/plato.sh"
+
+  [packages.plato.uninstall]
+  method      = "manifest"
+  purge_paths = ["/mnt/onboard/.adds/plato/**"]
