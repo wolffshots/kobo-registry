@@ -494,3 +494,59 @@ min_kpm     = "0.11.0"
   [packages.plato.uninstall]
   method      = "manifest"
   purge_paths = ["/mnt/onboard/.adds/plato/**"]
+
+# kf-core-fonts and kf-extra-fonts are the first content-dir packages: kpm
+# extracts a flat zip of *.ttf files straight into /mnt/onboard/fonts, a shared
+# directory every font package writes into. min_kpm is mandatory — kpm 0.11.0
+# and older deny /mnt/onboard/fonts as an install destination
+# (ValidateInstallDecl; kpm-fonts-dicts-plan.md §1), so an old client drops
+# both defs instead of trying to install into a path it refuses. That drop is
+# silent and safe: a per-file ownership check, not a per-directory one, is what
+# makes the shared /mnt/onboard/fonts destination safe at all, and only 0.12.0
+# has that check.
+#
+# Verified against release v2026.08.05 (GitHub shows it as "v4.2", published
+# 2026-08-05) of nicoverbruggen/ebook-fonts, the newest at the time of writing:
+# kobo-core-fonts.zip (5,812,011 bytes) is 36 *.ttf files, no directory
+# entries, no nested paths, no README/LICENSE; kobo-extra-fonts.zip
+# (22,528,615 bytes) is 137 *.ttf files, same shape. root is omitted ("" is the
+# default) because both zips are already flat, same as Plato above. The two
+# zips share no filename, checked case-sensitively and FAT32-folded (rule C2),
+# so the two packages install side by side without tripping the per-file
+# ownership refusal.
+#
+# Per upstream's README: "I recommend rebooting your Kobo after installing the
+# fonts... A reboot is REQUIRED if you already had other versions of these
+# fonts installed." kpm has no partial-reboot state to tell a first install
+# from an update, so both packages call for a reboot every time.
+#
+# No tested_fw: no curator has installed either package through kpm on a
+# device yet.
+[packages.kf-core-fonts]
+name        = "KF Core fonts"
+description = "Core Collection of reading fonts, tuned for Kobo's kepub renderer (KF builds). Installs into the fonts folder. Reboot after installing or updating."
+source      = "github.com/nicoverbruggen/ebook-fonts"
+forge       = "github"
+asset       = "kobo-core-fonts.zip"
+min_kpm     = "0.12.0"
+homepage    = "https://github.com/nicoverbruggen/ebook-fonts"
+
+  [packages.kf-core-fonts.install]
+  method = "app-tree"
+  dest   = "/mnt/onboard/fonts"
+
+# kf-extra-fonts is the Extra Collection from the same release and repo as
+# kf-core-fonts above. See that entry's comment for the verification detail and
+# the min_kpm/reboot rationale, which apply here unchanged.
+[packages.kf-extra-fonts]
+name        = "KF Extra fonts"
+description = "Extra Collection of reading fonts, tuned for Kobo's kepub renderer (KF builds). Installs into the fonts folder. Reboot after installing or updating."
+source      = "github.com/nicoverbruggen/ebook-fonts"
+forge       = "github"
+asset       = "kobo-extra-fonts.zip"
+min_kpm     = "0.12.0"
+homepage    = "https://github.com/nicoverbruggen/ebook-fonts"
+
+  [packages.kf-extra-fonts.install]
+  method = "app-tree"
+  dest   = "/mnt/onboard/fonts"
