@@ -289,6 +289,49 @@ nh_name     = "NickelDissolve"
   marker_file = "/mnt/onboard/.adds/nickel-dissolve/uninstall"
   purge_paths = ["/mnt/onboard/.adds/nickel-dissolve/**"]
 
+# NickelSync self-uninstalls when its shipped trigger file is deleted
+# (nh_info.uninstall_xflag in src/nickelsync.cc), so this is "marker-remove".
+# Its uninstall callback also deletes .adds/nm/nickelsync, config.ini and
+# log.txt at the next boot. extra_paths deletes the menu file at once, so the
+# "Sync now" item goes away before the reboot. The tarball ships no config.ini,
+# so an update never overwrites the user's settings. kpm creates the file from
+# the template. No tested_fw: no curator has run it on a device yet.
+[packages.nickelsync]
+name        = "NickelSync"
+description = "Add a NickelMenu \"Sync now\" item that connects Wi-Fi and starts a Kobo sync, also inside a book"
+source      = "github.com/wolffshots/nickelsync"
+forge       = "github"
+asset       = "KoboRoot.tgz"
+min_kpm     = "0.4.0"
+nh_name     = "NickelSync"
+
+  [packages.nickelsync.uninstall]
+  method      = "marker-remove"
+  marker_file = "/mnt/onboard/.adds/nickelsync/uninstall"
+  extra_paths = ["/mnt/onboard/.adds/nm/nickelsync"]
+  purge_paths = ["/mnt/onboard/.adds/nickelsync/**"]
+
+  # NickelSync reads this file on each "Sync now" tap, so no reboot is needed.
+  [[packages.nickelsync.configs]]
+  name        = "Settings"
+  path        = "/mnt/onboard/.adds/nickelsync/config.ini"
+  format      = "ini"
+  reload      = "auto"
+  create      = true
+  description = "Wi-Fi connect timeout, and whether to turn Wi-Fi off again after a sync."
+  template = '''
+[NickelSync]
+; Seconds to wait for a Wi-Fi connection (10 to 180).
+ConnectTimeout=60
+; If Wi-Fi was off before the sync, turn it off again after the sync.
+RestoreWifi=true
+'''
+
+  # Curator attestation for the release asset. The release workflow built it,
+  # and the hash matches the SHA256SUMS file of the release (2026-11-10).
+  [packages.nickelsync.checksums]
+  "v0.1.0" = "4459b056ffe3869623f35ff034a44b02f37b0051e726b53576ec737516ee28e3"
+
 # NickelHome uninstalls when a trigger file is CREATED (nh_info.uninstall_flag =
 # NHM_CONFIG_DIR "/uninstall" in src/nickelhome.cc); the tarball ships only doc +
 # default, no trigger, so this is "marker", not "marker-remove".
