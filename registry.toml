@@ -295,8 +295,8 @@ nh_name     = "NickelDissolve"
 # log.txt at the next boot. extra_paths deletes the menu file at once, so the
 # "Sync now" item goes away before the reboot. The tarball ships no config.ini,
 # so an update never overwrites the user's settings. kpm creates the file from
-# the template. tested_fw: v0.2.0 and v0.2.1 passed device tests on a
-# Libra Colour with 4.46.23852 (2026-11-10).
+# the template. tested_fw: v0.2.0, v0.2.1 and v0.3.0 passed device tests on
+# a Libra Colour with 4.46.23852 (2026-11-10).
 [packages.nickelsync]
 name        = "NickelSync"
 description = "Add a NickelMenu \"Sync now\" item that connects Wi-Fi and starts a Kobo sync, also inside a book"
@@ -320,13 +320,15 @@ tested_fw   = "4.46.23852"
   format      = "ini"
   reload      = "auto"
   create      = true
-  description = "Wi-Fi connect timeout, and whether to turn Wi-Fi off again after a sync."
+  description = "Wi-Fi connect timeout, whether to turn Wi-Fi off again after a sync, and a quick sync of only the reading position inside a book."
   template = '''
 [NickelSync]
 ; Seconds to wait for a Wi-Fi connection (10 to 180).
 ConnectTimeout=60
 ; If Wi-Fi was off before the sync, turn it off again after the sync.
 RestoreWifi=true
+; Inside a book, sync only the reading position and skip the full sync.
+QuickSync=false
 '''
 
   # Curator attestation for the release asset. The release workflow built it,
@@ -335,6 +337,7 @@ RestoreWifi=true
   "v0.1.0" = "4459b056ffe3869623f35ff034a44b02f37b0051e726b53576ec737516ee28e3"
   "v0.2.0" = "b2c3107e8ca78f948573881928d74d0fb189ad6f543f91553aad88656f0d9a77"
   "v0.2.1" = "b98676c6205ddfc0cf845a431c64063374a58b714fe1acdf15330c4dbea6d622"
+  "v0.3.0" = "97deb4f0aaba9e40499f77d77ad8a5af5d4c215950686e9dc48c7633c4dbdad4"
 
 # NickelHome uninstalls when a trigger file is CREATED (nh_info.uninstall_flag =
 # NHM_CONFIG_DIR "/uninstall" in src/nickelhome.cc); the tarball ships only doc +
