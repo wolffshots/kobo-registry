@@ -295,7 +295,8 @@ nh_name     = "NickelDissolve"
 # log.txt at the next boot. extra_paths deletes the menu file at once, so the
 # "Sync now" item goes away before the reboot. The tarball ships no config.ini,
 # so an update never overwrites the user's settings. kpm creates the file from
-# the template. No tested_fw: no curator has run it on a device yet.
+# the template. tested_fw: v0.2.0 passed a device test on a Libra Colour
+# with 4.46.23852 (2026-11-10).
 [packages.nickelsync]
 name        = "NickelSync"
 description = "Add a NickelMenu \"Sync now\" item that connects Wi-Fi and starts a Kobo sync, also inside a book"
@@ -304,6 +305,7 @@ forge       = "github"
 asset       = "KoboRoot.tgz"
 min_kpm     = "0.4.0"
 nh_name     = "NickelSync"
+tested_fw   = "4.46.23852"
 
   [packages.nickelsync.uninstall]
   method      = "marker-remove"
@@ -331,6 +333,7 @@ RestoreWifi=true
   # and the hash matches the SHA256SUMS file of the release (2026-11-10).
   [packages.nickelsync.checksums]
   "v0.1.0" = "4459b056ffe3869623f35ff034a44b02f37b0051e726b53576ec737516ee28e3"
+  "v0.2.0" = "b2c3107e8ca78f948573881928d74d0fb189ad6f543f91553aad88656f0d9a77"
 
 # NickelHome uninstalls when a trigger file is CREATED (nh_info.uninstall_flag =
 # NHM_CONFIG_DIR "/uninstall" in src/nickelhome.cc); the tarball ships only doc +
