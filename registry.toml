@@ -15,8 +15,20 @@ description = "Kobo package manager — install and update mods from the device"
 source      = "github.com/wolffshots/kpm"
 forge       = "github"
 asset       = "KoboRoot.tgz"
-tested_fw   = "4.45.23697"
+tested_fw   = "4.46.23852"
 nh_name     = "NickelKPM"
+
+  [packages.kpm.checksums]
+  "v0.13.0" = "3c036d1714a7a9e750dbfb34e9a56ada68d74abf5e718974b8f9800a320c0777"
+
+  # Firmware 6.x build (kpm >= 0.13.0). Kobo.tgz holds the Qt 5 and the Qt 6
+  # hook plus the seed folder. Tested on 6.0.279225 in the kfw vm emulator
+  # only, so no tested_fw yet.
+  [packages.kpm.fw6]
+  asset = "Kobo.tgz"
+
+    [packages.kpm.fw6.checksums]
+    "v0.13.0" = "c4c24ba412ed811cc1a9fe35e58d88b80bb496228fb537dd80febeaf568813e0"
 
 # NickelClock ships its KoboRoot.tgz wrapped in a release zip (kpm >= 0.4.0
 # unwraps those) and self-uninstalls when its shipped trigger file is deleted
@@ -159,6 +171,19 @@ forge       = "github"
 asset       = "KoboRoot.tgz"
 tested_fw   = "4.45.23697"
 nh_name     = "NickelMenu"
+
+  # Firmware 6.x build: the Qt 6 fork by nicoverbruggen. Its Kobo.tgz holds
+  # only imageformats/libnm.so (checked for fork-v1.4 on 2026-11-21). The
+  # fork keeps the .adds/nm/uninstall marker, so the uninstall below applies.
+  # 4.x keeps pgaskin/NickelMenu. When pgaskin/NickelMenu publishes a release
+  # with a Kobo.tgz for 6.x, delete the source line below, so both lines use
+  # the original repo, and replace the fork checksums.
+  [packages.nickelmenu.fw6]
+  source = "github.com/nicoverbruggen/NickelMenu"
+  asset  = "Kobo.tgz"
+
+    [packages.nickelmenu.fw6.checksums]
+    "fork-v1.4" = "9d638f260646cf1c1f506c82921d92d482bd33565c84686578d90a7a513de9a4"
 
   [packages.nickelmenu.uninstall]
   method      = "marker"
