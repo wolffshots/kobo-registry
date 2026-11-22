@@ -347,7 +347,7 @@ tested_fw   = "4.46.23852"
   format      = "ini"
   reload      = "auto"
   create      = true
-  description = "Wi-Fi connect timeout, whether to turn Wi-Fi off again after a sync, and a quick sync of only the reading position inside a book."
+  description = "Wi-Fi connect timeout, whether to turn Wi-Fi off again after a sync, a quick sync of only the reading position inside a book, auto-sync on book open and on sleep, and the Hardcover button."
   template = '''
 [NickelSync]
 ; Seconds to wait for a Wi-Fi connection (10 to 180).
@@ -356,6 +356,12 @@ ConnectTimeout=60
 RestoreWifi=true
 ; Inside a book, sync only the reading position and skip the full sync.
 QuickSync=false
+; Sync the reading position when a book loads.
+AutoSyncOnOpen=false
+; Sync when the device goes to sleep.
+AutoSyncOnSleep=false
+; Show a Hardcover button on the NickelSync page.
+Hardcover=false
 '''
 
   # Curator attestation for the release asset. The release workflow built it,
@@ -365,6 +371,17 @@ QuickSync=false
   "v0.2.0" = "b2c3107e8ca78f948573881928d74d0fb189ad6f543f91553aad88656f0d9a77"
   "v0.2.1" = "b98676c6205ddfc0cf845a431c64063374a58b714fe1acdf15330c4dbea6d622"
   "v0.3.0" = "97deb4f0aaba9e40499f77d77ad8a5af5d4c215950686e9dc48c7633c4dbdad4"
+  "v0.4.0" = "d2f43a6e61bff1556646d0c39249582f9e38313e762bd726742071df7b0d4957"
+
+  # Firmware 6.x: Kobo.tgz has the Qt 5 and the Qt 6 build. The mod writes its
+  # uninstall flag and NickelMenu file at the first start. Tested on 6.0.279225
+  # in the kfw vm emulator only, so no tested_fw yet. The 4.x line stays on
+  # KoboRoot.tgz.
+  [packages.nickelsync.fw6]
+  asset = "Kobo.tgz"
+
+    [packages.nickelsync.fw6.checksums]
+    "v0.4.0" = "7eea01afa1076fd3892bd8f323b3c0620dce5fb69a1ee14d026741362935ae50"
 
 # NickelHome uninstalls when a trigger file is CREATED (nh_info.uninstall_flag =
 # NHM_CONFIG_DIR "/uninstall" in src/nickelhome.cc); the tarball ships only doc +
