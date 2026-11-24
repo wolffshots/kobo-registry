@@ -45,6 +45,10 @@ asset       = "NickelClock-*.zip"
 min_kpm     = "0.4.0"
 tested_fw   = "4.45.23697"
 nh_name     = "NickelClock"
+# Firmware 6.x has its own reader clock (ReadingSettings showClockWhileReading,
+# not in 4.46). kpm >= 0.15.0 uninstalls NickelClock on 6.x and never installs
+# it there. Older kpm ignores this key.
+builtin_fw6 = "Nickel shows a clock while reading"
 
   [packages.nickelclock.uninstall]
   method      = "marker-remove"
