@@ -21,6 +21,7 @@ nh_name     = "NickelKPM"
   [packages.kpm.checksums]
   "v0.13.0" = "3c036d1714a7a9e750dbfb34e9a56ada68d74abf5e718974b8f9800a320c0777"
   "v0.14.0" = "325fdcc5a580f7d25fa3934ed75551b26804a4972f2a376383c3fbd4b827eaff"
+  "v0.15.0" = "e56920542ff11cc36e9e5fecf7aa3c25f108c086f56b1df5420761353b2e032a"
 
   # Firmware 6.x build (kpm >= 0.13.0). Kobo.tgz holds the Qt 5 and the Qt 6
   # hook plus the seed folder. Tested on 6.0.279225 in the kfw vm emulator
@@ -31,6 +32,7 @@ nh_name     = "NickelKPM"
     [packages.kpm.fw6.checksums]
     "v0.13.0" = "c4c24ba412ed811cc1a9fe35e58d88b80bb496228fb537dd80febeaf568813e0"
     "v0.14.0" = "a6f6474ae24ca2f9dcf348e24a563c4d4ea76df53849705d43ed02b7960abc6e"
+    "v0.15.0" = "02fe5a8407ab3b79fe52f7d63734f9fbcb29e8b14be2d23d013b3cf27a755f32"
 
 # NickelClock ships its KoboRoot.tgz wrapped in a release zip (kpm >= 0.4.0
 # unwraps those) and self-uninstalls when its shipped trigger file is deleted
