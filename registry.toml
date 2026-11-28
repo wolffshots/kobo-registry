@@ -11,7 +11,7 @@ schema_version = 1
 # shipped kpm.toml).
 [packages.kpm]
 name        = "kpm"
-description = "Kobo package manager — install and update mods from the device"
+description = "Kobo package manager. Install and update mods from the device. Needs no other mod. NickelMenu is optional: without it, kpm opens from a row on the More page. NickelDBus is optional and useful only with NickelMenu: it shows the result of the kpm NickelMenu entries as a toast."
 source      = "github.com/wolffshots/kpm"
 forge       = "github"
 asset       = "KoboRoot.tgz"
